@@ -30,15 +30,11 @@ const removeActive = () => {
 
 // ===== Load Categories =====
 const loadCategories = async () => {
-  try {
-    const res = await fetch(
-      "https://openapi.programming-hero.com/api/categories"
-    );
-    const data = await res.json();
-    displayCategories(data.categories);
-  } catch (err) {
-    console.error(err);
-  }
+  const res = await fetch(
+    "https://openapi.programming-hero.com/api/categories"
+  );
+  const data = await res.json();
+  displayCategories(data.categories);
 };
 
 // ===== Display Categories =====
@@ -48,9 +44,10 @@ const displayCategories = (categories) => {
 
   // Add "All Trees" button
   const allBtn = document.createElement("button");
-  allBtn.className = "btn btn-outline w-full category-btn";
+  allBtn.className =
+    "btn border-none text-black btn-outline btn-primary w-full ";
   allBtn.id = "category-btn-all";
-  allBtn.innerText = "🌱 All Trees";
+  allBtn.innerText = " All Trees";
   allBtn.onclick = () => {
     removeActive();
     allBtn.classList.add("active");
@@ -60,10 +57,11 @@ const displayCategories = (categories) => {
 
   categories.forEach((cat) => {
     const btn = document.createElement("button");
-    btn.className = "btn btn-outline w-full category-btn";
+    btn.className =
+      "btn border-none btn-outline text-black btn-primary w-full ";
     btn.id = `category-btn-${cat.id}`;
     const catName = cat.category_name || cat.category || cat.name || "Unknown";
-    btn.innerText = `🌱 ${catName}`;
+    btn.innerText = ` ${catName}`;
     btn.onclick = () => {
       removeActive();
       btn.classList.add("active");
@@ -76,27 +74,21 @@ const displayCategories = (categories) => {
 // ===== Load All Plants =====
 const loadPlants = async () => {
   manageSpinner(true);
-  try {
-    const res = await fetch("https://openapi.programming-hero.com/api/plants");
-    const data = await res.json();
-    displayPlants(data.plants);
-  } catch (err) {
-    console.error(err);
-  }
+
+  const res = await fetch("https://openapi.programming-hero.com/api/plants");
+  const data = await res.json();
+  displayPlants(data.plants);
 };
 
 // ===== Load Plants by Category =====
 const loadPlantsByCategory = async (id) => {
   manageSpinner(true);
-  try {
-    const res = await fetch(
-      `https://openapi.programming-hero.com/api/category/${id}`
-    );
-    const data = await res.json();
-    displayPlants(data.plants);
-  } catch (err) {
-    console.error(err);
-  }
+
+  const res = await fetch(
+    `https://openapi.programming-hero.com/api/category/${id}`
+  );
+  const data = await res.json();
+  displayPlants(data.plants);
 };
 
 // ===== Display Plants =====
@@ -123,7 +115,7 @@ const displayPlants = (plants) => {
       <img src="${plant.image}" alt="${
       plant.name
     }" class="h-40 w-full object-cover rounded mb-4"/>
-      <h2 class="font-bold text-xl cursor-pointer hover:text-green-700">${
+      <h2 class="font-bold text-left text-xl cursor-pointer hover:text-green-700">${
         plant.name
       }</h2>
       <p class="text-sm mt-1">${
@@ -131,12 +123,14 @@ const displayPlants = (plants) => {
           ? plant.description.slice(0, 50) + "..."
           : "No description"
       }</p>
-      <p class="mt-1"><span class="font-bold">Category:</span> ${
-        plant.category || "Unknown"
-      }</p>
-      <p class="mt-1 font-bold">Price: $${plant.price}</p>
+      <div class="flex justify-between items-center">
+  <p class="bg-[#dcfce7] rounded-md px-3 text-[#15803d] mt-1"><span class="font-bold"></span> ${
+    plant.category || "Unknown"
+  }</p>
+      <p class="mt-1 font-bold">Price: ৳${plant.price}</p> 
+</div>
       <div class="flex justify-center gap-2 mt-3">
-        <button class="btn btn-sm btn-warning text-green-900">Add to Cart</button>
+        <button class="btn bg-[#15803D] btn-sm w-full md:px-10 rounded-3xl md:font-bold text-white">Add to Cart</button>
       </div>
     `;
 
@@ -154,15 +148,11 @@ const displayPlants = (plants) => {
 
 // ===== Load Plant Details =====
 const loadPlantDetails = async (id) => {
-  try {
-    const res = await fetch(
-      `https://openapi.programming-hero.com/api/plant/${id}`
-    );
-    const data = await res.json();
-    displayPlantDetails(data.data);
-  } catch (err) {
-    console.error(err);
-  }
+  const res = await fetch(
+    `https://openapi.programming-hero.com/api/plant/${id}`
+  );
+  const data = await res.json();
+  displayPlantDetails(data.data);
 };
 
 // ===== Display Plant Details in Modal =====
@@ -170,9 +160,12 @@ const displayPlantDetails = (plant) => {
   document.getElementById("modal-title").innerText = plant.name;
   document.getElementById("modal-image").src = plant.image;
   document.getElementById("modal-description").innerText =
-    plant.description || "No description";
+    plant.description || "No description available";
   document.getElementById("modal-price").innerText = plant.price || 0;
-  document.getElementById("plantModal").showModal();
+
+  // ✅ Ensure modal opens
+  const modal = document.getElementById("plantModal");
+  if (modal) modal.showModal();
 };
 
 // ===== Cart Functions =====
@@ -198,25 +191,14 @@ const displayCart = () => {
       "flex justify-between items-center bg-white p-2 rounded shadow";
     li.innerHTML = `
       <span>${item.name}</span>
-      <span>$${item.price}</span>
-      <button class="text-red-500 font-bold">❌</button>
+      <span>৳${item.price}</span>
+      <button class="text-gray-500 font-bold">x</button>
     `;
     li.querySelector("button").onclick = () => removeFromCart(index);
     container.appendChild(li);
   });
 
   document.getElementById("total").innerText = total;
-};
-
-// ===== Checkout =====
-document.getElementById("checkout-btn").onclick = () => {
-  if (cart.length === 0) {
-    alert("Your cart is empty!");
-    return;
-  }
-  alert("Thank you for your purchase!");
-  cart = [];
-  displayCart();
 };
 
 // ===== Initialize =====
